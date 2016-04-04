@@ -1,11 +1,11 @@
-.interative-href{
+.interactive-href {
 	position: relative;
 	font-size: 100px;
 	text-decoration: none;
 	color : black;
 }
 
-.interative-href:before{
+.interactive-href:before{
     content: "";
 	position: absolute;
 	width: 0%;
@@ -17,7 +17,25 @@
 	-webkit-transition: all 0.2s ease-in-out 0s;
 	transition: all 0.2s ease-in-out 0s;
 }
-.interative-href:hover:before{
+
+.interactive-href:hover:before{
 	visibility: visible;
 	width:  100%;
+}
+
+.interactive-href-active {
+	position: relative;
+	font-size: 100px;
+	text-decoration: none;
+	color : black;
+}
+
+.interactive-href-active:before{
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 5px;
+	top: 50%;
+	left: 0;
+	background-color: black;
 }
