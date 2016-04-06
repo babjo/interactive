@@ -1,48 +1,50 @@
 $(function(){
 
 	$('.content').each(function(index, e){
-		bindClickMoveEvent(e, 10);
+		$(e).click(function(event){
+			$("body").css('overflow', 'hidden');
+			var copy = copyToLayerAndShowLayer(e);
+			var initLeft = parseInt(copy.css('left'), 10);
+			var initTop = parseInt(copy.css('top'), 10);
+
+			move(copy, 10);
+
+			$('.detail-page-layer').click(function(){
+				copy.css({top:initTop+'px', left:initLeft+'px'});
+				var layer = $(this);
+				copy.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend',
+					function(e) {
+						layer.children().first().empty();
+						layer.css('display', 'none');
+						layer.click(null);
+						$("body").css('overflow', 'auto');
+					});
+			});
+		});
 	});
 
-	/* 클릭하면
-	* 1. 흰 배경(fixed) z-index 값을 바꾸고 wrap(relative)을 삽입한다.
-	* 2. 이미지를 복사하고 wrap 태그 안에 동일한 위치에 넣는다. (left와 scrollTop 활용)
-	* 3. 복사한 태그를 최초 값을 저장하고 위치로 이동시킨다.
-	* 4. 높이 값을 계산하고 그 아래 글(absolute)을 배치한다.
-	*
-	* 다시 한번 더 클릭하면
-	* 1. 최초 값으로 바꾸며 본래 자리로 이동한다.
-	* 2. 애니메이션이 끝나면 wrap 태그를 삭제한다.
-	* 3. 흰 배경을 z-index 값을 낮춘다.
-	* */
+	function move(jqueryElement, topValue){
+		var offset = jqueryElement.offset();
+		var windowWidth = $(window).width();
+		var scrollTop = $("body").scrollTop();
+		var contentWidth = jqueryElement.width();
+		var contentTop = parseInt(jqueryElement.css('top'), 10);
 
-	// 복사안하고 옮기기
-	function bindClickMoveEvent (e, move){
-		var initTop = $(e).css('top');
-		var initLeft = $(e).css('left');
+		var left = (windowWidth - contentWidth)/2;
+		var top = -offset.top + contentTop + topValue + scrollTop;
+		jqueryElement.css({top: top+"px", left: left+"px"});
+	}
 
-		(function (){
-			var moved = false;
-			$(e).click(function(event){
-				var offset = $(e).offset();
-				var width = $(window).width();
-				var scrollTop = $("body").scrollTop();
-				console.log(scrollTop);
-				var contentWidth = $(e).width();
-				var contentTop = parseInt($(e).css('top'), 10);
+	function copyToLayerAndShowLayer(e){
+		var content = $(e);
+		var copy = $(content.clone());
+		copy.width(content.width());
+		var left = content.offset().left;
+		var top = content.offset().top - $("body").scrollTop();
+		copy.css({left : left+'px', top : top+'px'});
+		$('.detail-page-layer > .wrap').append(copy);
 
-				var left = (width - contentWidth)/2 - offset.left;
-				var top = -offset.top + contentTop + move + scrollTop;
-
-
-				if(moved){
-					$(e).css({top:initTop, left:initLeft});
-					moved = false;
-				}else{
-					$(e).css({top: top+"px", left: left+"px"});
-					moved = true;
-				}
-			});
-		})();
+		$('.detail-page-layer').css('display','block');
+		return copy;
 	}
 });
